@@ -25,12 +25,19 @@ SECRET_KEY = "django-insecure-)&fka(xh$x7k9g_timljgx=rxco$q)h_b1t4r*o1v+1hsqw4md
 # Application definition
 
 INSTALLED_APPS = [
+    # Default Apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    # Third party apps
+    'django_countries',
+
+    # Local apps
+    'event'
 ]
 
 MIDDLEWARE = [
