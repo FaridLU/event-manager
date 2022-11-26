@@ -8,7 +8,7 @@ from core.models import AbstractCustomModel
 class Event(AbstractCustomModel):
     name = models.CharField(max_length=100)
     location = CountryField()
-    date = models.DateField()
+    date = models.DateTimeField()
 
     class Meta:
         verbose_name = 'Event'
