@@ -12,7 +12,6 @@ from .serializers import (BasicEventSerializer, EventCreateUpdateSerializer,
 
 
 class EventListCreateAPIView(APIView):
-    # authentication_classes = (AllowAny,)
 
     # List of events
     def get_queryset(self):
@@ -39,23 +38,13 @@ class EventListCreateAPIView(APIView):
             paginated_data = get_paginated_data(Event, qs, request)
             paginated_instances = paginated_data.pop('paginated_instances')
 
-            print(paginated_instances)
-
             serializer = EventListSerializer(paginated_instances, many=True)
-
-            # data = {
-            #     'data': ,
-            #     **paginated_data,
-            # }
-            print('pmp')
             response = {
                 'draw': draw,
                 'recordsTotal': records_total,
                 'recordsFiltered': records_filtered,
                 'data': serializer.data,
             }
-            print(response)
-            # print(data)
             return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
             return get_error_response(e)

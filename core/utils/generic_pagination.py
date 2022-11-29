@@ -23,9 +23,7 @@ class PaginatedData:
 def get_paginated_data(model: Model, query_set: QuerySet, request: Request) -> dict:
 
     total_number_of_records = query_set.count()
-    # print(request.GET)
     current_page_num: int = request.GET.get("page_num", 1)
-    print(current_page_num)
     page_size: int = int(request.GET.get("page_size", query_set.count() or 10))
 
     paginator = Paginator(query_set, page_size)
@@ -34,7 +32,6 @@ def get_paginated_data(model: Model, query_set: QuerySet, request: Request) -> d
     try:
         page_obj = paginator.page(current_page_num)
         paginated_instances = page_obj.object_list
-        print(paginated_instances)
         try:
             next_page_num = None if not page_obj.has_other_pages() else page_obj.next_page_number()
         except:
