@@ -16,7 +16,6 @@ def get_generic_exception_handler_status_code(exception) -> int:
     else:
         return status.HTTP_500_INTERNAL_SERVER_ERROR
 
-
 def get_error_response(exception) -> Response:
     response: Response = Response(
         {'status': 'error'},

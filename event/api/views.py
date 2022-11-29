@@ -37,7 +37,7 @@ class EventListCreateAPIView(APIView):
                 'recordsFiltered': records_filtered,
                 'data': serializer.data,
             }
-            return get_success_response(data=response)
+            return Response(response, status=status.HTTP_200_OK)
 
         except Exception as e:
             return get_error_response(e)

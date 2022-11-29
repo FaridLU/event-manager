@@ -1,7 +1,7 @@
 <script>
     $(function () {
         var countries = JSON.parse(`{{ countries_str | safe }}`);
-        
+        console.log(countries)
         // Event List Datatable (serverside)
         eventTable = $("#event-list").DataTable({
             lengthMenu: [5, 10, 25, 50, 101],
@@ -23,6 +23,7 @@
                     "orderable": false,
                     "searchable": false,
                     "render": function (data, type, row) {
+                        console.log(row)
                         return row['name'];
                     },
                     "targets": 0
@@ -225,7 +226,7 @@
     }
     $(document).on('submit', '#create-event-form', function (e) {
         e.preventDefault();
-        
+
         let _this = $(this);
         let data = {
             name: $('#name').val(),
