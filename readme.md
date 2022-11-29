@@ -72,3 +72,5 @@ Now simply run the project
 ```bash
 python manage.py runserver
 ```
+
+Finally, go to the following [link](http://127.0.0.1:8000) and play with the project. :)
