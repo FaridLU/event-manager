@@ -12,8 +12,9 @@ from .serializers import (BasicEventSerializer, EventCreateUpdateSerializer,
 
 
 class EventListCreateAPIView(APIView):
-    # List of events
+    # authentication_classes = (AllowAny,)
 
+    # List of events
     def get_queryset(self):
         return Event.objects.all()
 
@@ -75,6 +76,7 @@ class EventListCreateAPIView(APIView):
 
 
 class EventReadUpdateDeleteAPIView(APIView):
+
     # Read an event
     def get(self, request, id) -> Response:
         try:

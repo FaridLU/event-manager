@@ -5,7 +5,7 @@ from . import views
 app_name = 'event'
 
 urlpatterns = [
-    path('', views.Dashboard.as_view(), name='dashboard'),
+    path('', views.DashboardView.as_view(), name='dashboard'),
 
     # Backend Endpoints
     path('api/', include('event.api.urls', namespace='event-api')),
