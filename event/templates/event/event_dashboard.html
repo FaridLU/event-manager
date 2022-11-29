@@ -1,0 +1,239 @@
+{% extends 'event/base.html' %}
+
+
+{% block content %}
+{% csrf_token %}
+    
+<span id="search_par" style="display: none;">{{search_par}}</span>
+    <!-- /.col-lg-12 -->
+<!-- /.row -->
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5><strong>Events</strong></h5>
+                <span class="text-muted">List of events!</span>
+                <a class="btn btn-sm btn-info" id="reset-filer" style="float: right;margin-top: -5px;" href="/">
+                    <i class="fas fa-plus-square"></i> Create
+                </a>
+
+            </div>
+            <!-- /.panel-heading -->
+            <div class="card-body">
+                <table class="table table-hover text-center" id="event-list"  style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Name</th>
+                            <th class="text-center">Location</th>
+                            <th class="text-center">Time</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="text-center">Name</th>
+                            <th class="text-center">Location</th>
+                            <th class="text-center">Time</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+{% endblock content %}
+    
+
+
+{% block js %}
+    <script>
+        $(function () {
+            // Datatables basic`
+            eventTable = $("#event-list").DataTable({
+                lengthMenu: [5, 10, 25, 50, 101],
+                "iDisplayLength": 5,
+                "processing": true,
+                "serverSide": true,
+                "bFilter": false,
+                "autoWidth": true,
+                "ajax": {
+                    url: "{% url 'event:event-api:event-list-create' %}",
+                    type: 'GET',
+                    data: function (d) {
+                        d.page_num = getPageNumber();
+                    }
+                },
+                "order": [],
+                "columnDefs": [
+                    {
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row) {
+                            console.log(row)
+                            return row['name'];
+                        },
+                        "targets": 0
+                    },
+                    {
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row) {
+                            return row['location'];
+                        },
+                        "targets": 1
+                    },
+                    {
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row) {
+                            console.log()
+                            return row['date'];
+                        },
+                        "targets": 2
+                    },
+                    {
+                        "orderable": false,
+                        "searchable": false,
+                        "render": function (data, type, row) {
+
+                            let has_db_access = row['has_db_access'] ? 'checked': '';
+                            let is_email_confirmed = row['is_email_confirmed'] ? 'checked': '';
+                            let is_active = row['is_active'] ? 'checked': '';
+
+                            let action = `
+                                <div class="text-center">
+                                    <a class="text-dark text-decoration-none cursor-pointer" href="#" data-toggle="modal" data-target="#eventEditModal-${row['id']}"  data-feather="edit">
+                                    </a>
+                                    <a class="text-dark text-decoration-none cursor-pointer" href="#" data-toggle="modal" data-target="#eventDeleteModal-${row['id']}" data-feather="trash-2">
+                                    </a>
+                                    <div class="modal fade text-left" id="eventEditModal-${row['id']}" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                
+                                                <div class="card-header">
+                                                    <h5 class="text-black"><strong>Events</strong></h5>
+                                                    <span class="text-muted">Edit an event!</span>
+                                                </div>
+                                                <div class="modal-body mx-3">
+                                                    <form class="text-black">
+                                                        <div class="form-group">
+                                                          <label for="name-${row['id']}">Name</label>
+                                                          <input type="text" class="form-control" data-event-id=${row['id']} id="name-${row['id']}" value="${row['name']}">
+                                                        </div>
+                                                        <div class="form-row">
+                                                          <div class="form-group col-md-6">
+                                                            <label for="location-${row['id']}">Location</label>
+                                                            <input type="text" class="form-control" data-event-id=${row['id']} id="location-${row['id']}" value="${row['location']}">
+                                                          </div>
+                                                          <div class="form-group col-md-6">
+                                                            <label for="date-${row['id']}">Date</label>
+                                                            <input type="text" class="form-control" data-event-id=${row['id']} id="date-${row['id']}" value="">
+                                                          </div>
+                                                        </div>
+                                                        
+                                                        <button type="submit" class="btn btn-primary float-right">Update</button>
+                                                      </form>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal fade text-left" id="eventDeleteModal-${row['id']}" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="card-header">
+                                                    <h5 class="text-black"><strong>Events</strong></h5>
+                                                    <span class="text-muted">Delete an event!</span>
+                                                </div>
+                                                <div class="modal-body mx-3">
+                                                    <form class="text-black">
+                                                        Are you sure you want to delete?
+                                                        </br>
+                                                        <button type="submit" class="btn btn-primary float-right">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            return action;
+                        },
+                        "targets": 3
+                    },
+                ],
+
+                "createdRow": function (row, data, dataIndex) {
+                },
+
+                "initComplete": function (settings, json) {
+                    load_listeners();
+                    feather.replace();
+                    eventTable.page(getPageNumber() - 1).draw('page');
+                }
+            });
+            // xp = eventTable;
+
+            eventTable.on('draw', function () {
+                eventTable.columns.adjust();
+            });
+
+            $('.sidebar-toggle').click(function () {
+                eventTable.columns.adjust();
+            });
+
+            $('#event-list').on('page.dt', function () {
+                const info = eventTable.page.info();
+                const page_number = info.page + 1;
+                const queryString = getQueryString([{'key': 'page', 'value': page_number}]);
+                history.replaceState(page_number, queryString, `./${queryString}`);
+            });
+            $('#event-list').on('length.dt', function (e, settings, len) {
+                const queryString = getQueryString([{'key': 'page', 'value': 1}]);
+                history.replaceState({id: null}, queryString, `./${queryString}`);
+            });
+            $('#event-list').on('search.dt', function (e, settings, len) {
+                const queryString = getQueryString([{'key': 'page', 'value': 1}]);
+                history.replaceState({id: null}, queryString, `./${queryString}`);
+            });
+        });
+
+
+        function load_listeners() {
+            $(document).on('change', '.edit', function (e) {
+                let _this = $(this);
+                let event_id = $(_this).data('event-id');
+                console.log(event_id);
+                $.ajax({
+                    url: `event/api/events/${event_id}`,
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(),
+                        
+                    },
+                    success: function(response) {
+                        let has_bd_access_col = $(_this).parents('td').siblings()[2];
+                        $(has_bd_access_col).text(response['has_db_access']);
+                        iziToast.success({
+                            title: 'OK',
+                            message: 'Access is Modified',
+                        });
+                    },
+                    error: function(response) {
+                        iziToast.error({
+                            title: 'Error',
+                            message: 'Some error occurred! Please contact to admin panel',
+                        });
+                    }
+                })
+            });
+        }
+
+    </script>
+{% endblock js %}
+    

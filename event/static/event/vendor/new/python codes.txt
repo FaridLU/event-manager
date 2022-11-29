@@ -1,0 +1,21 @@
+##############
+CREATE NEW ENV IN PYTHON
+py -m pip install virtualenv
+py -m venv MAOSSenv2
+.\MAOSSenv2\Scripts\activate
+deactivate
+
+
+#############
+CREATE DJANGO PROJECT
+python -m pip install Django
+django-admin startproject maoss
+python manage.py runserver
+python manage.py makemigrations
+  python manage.py migrate
+python manage.py load_AMT_data   
+
+############
+RUN SCRAPY
+python -m pip install scrapy
+crapy crawl testagain -o TEST.csv

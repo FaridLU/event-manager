@@ -2,7 +2,7 @@ from django.urls import include, path
 
 from . import views
 
-app_name = 'event'
+app_name = 'event-api'
 
 urlpatterns = [
     path('events/', views.EventListCreateAPIView.as_view(), name='event-list-create'),

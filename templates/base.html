@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta
+      name="author"
+      content="Mark Otto, Jacob Thornton, and Bootstrap contributors"
+    />
+    <meta name="generator" content="Hugo 0.104.2" />
+    <title>Album example · Bootstrap v5.2</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css" integrity="sha512-O03ntXoVqaGUTAeAmvQ2YSzkCvclZEcPQu1eqloPaHfJ5RuNGiS4l+3duaidD801P50J28EHyonCV06CUlTSag==" crossorigin="anonymous" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js" integrity="sha512-Zq9o+E00xhhR/7vJ49mxFNJ0KQw1E1TMWkPTxrWcnpfEFDEXgUiwJHIKit93EW/XxE31HSI5GEOW06G6BF1AtA==" crossorigin="anonymous"></script>
+	<!-- https://startbootstrap.com/previews/sb-admin-2/ -->
+
+	<link rel="shortcut icon" type="image/png" href="{% static 'ico/clinic-medical-solid.ico' %}"/>
+
+	<!-- Custom fonts for this template-->
+	<link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" />
+	<link
+		href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+		rel="stylesheet" />
+
+	<!-- Custom styles for this template-->
+	<link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css"/>
+    <meta name="theme-color" content="#712cf9" />
+
+
+	<style>
+		.cursor-pointer, .custom-select{
+			cursor: pointer;
+		}
+        .text-black {
+            color: #000000;
+        }
+        .bg-dark {
+            background-color: rgb(27, 38, 44) !important;
+        }
+		@media (min-width: 768px) {
+			.sidebar-brand-icon {
+				display: none;
+			}
+		}
+		#wrapper > .toggled > .sidebar-brand > .sidebar-brand-icon {
+			display: block;
+		}
+		body, table {
+			color: #000000 !important;
+		}
+	</style>
+	
+	{% block header %} {% endblock header %}
+  </head>
+  <body>
+    <header>
+      <div class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container">
+          <a href="#" class="navbar-brand d-flex align-items-center">
+
+            <strong>Event Manager</strong>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      
+      <div class="album py-5 bg-light">
+        <div class="container">
+            
+            {% block content %}
+                
+            {% endblock content %}
+            
+            <link href="{% static 'event/vendor/morrisjs/morris.css' %}" rel="stylesheet">
+            <link href="{% static 'event/vendor/datatables-responsive/dataTables.responsive.css' %}" rel="stylesheet">
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="sticky-footer mt-5" style="background-color: #000000;">
+        <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+                <span class="text-white">Copyright &copy; F4RID 2022</span>
+            </div>
+        </div>
+    </footer>
+	<!-- Bootstrap core JavaScript-->
+	<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+	<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+	<!-- Core plugin JavaScript-->
+	<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+	<!-- Custom scripts for all pages-->
+	<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+	
+	<link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet" />
+
+	<script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+	<script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+	<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+    <script>
+        $('[data-toggle="tooltip"]').tooltip();
+		feather.replace();
+		function getPageNumber() {
+			let page_num = 1;
+			const queryDict = getQueryParameters();
+			const value = parseInt(queryDict["page"]);
+			if (!isNaN(value)) page_num = value;
+
+			return page_num;
+		}
+		function getQueryString(new_value_list = []) {
+            let queryDict = getQueryParameters();
+            let queryString = '';
+            new_value_list.forEach(function (obj) {
+                queryDict[obj['key']] = obj['value'].toString();
+            });
+
+            for (const key in queryDict) {
+                if (queryDict.hasOwnProperty(key)) {
+                    if (queryString) queryString += '&';
+                    queryString += `${key}=${queryDict[key]}`;
+                }
+            }
+            return queryString ? `?${queryString}` : '';
+        }
+		function getQueryParameters() {
+			let queryDict = {};
+
+			const q = location.search.substr(1).split("&");
+			q.forEach(function (value, index) {
+				if (!value) return;
+				const s_array = value.split("=");
+				queryDict[s_array[0]] = s_array[1] ? s_array[1] : "";
+			});
+
+			return queryDict;
+		}
+    </script>
+
+    {% block js %}
+        
+    {% endblock js %}
+        
+  </body>
+</html>

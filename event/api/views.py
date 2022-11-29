@@ -13,21 +13,49 @@ from .serializers import (BasicEventSerializer, EventCreateUpdateSerializer,
 
 class EventListCreateAPIView(APIView):
     # List of events
+
+    def get_queryset(self):
+        return Event.objects.all()
+
     def get(self, request) -> Response:
         try:
-            instance = Event.objects.all()
+            qs = self.get_queryset()
+            drug_qs_range = qs
+
+            draw = request.GET.get('draw')
+            records_total = qs.count()
+            records_filtered = qs.count()
+
+            length = int(request.GET.get('length'))
+            start = int(request.GET.get('start'))
+            order_column = request.GET.get('order[0][column]')
+            order_dir = request.GET.get('order[0][dir]')
+            search_str = request.GET.get('search[value]')
+
+            qs = Event.objects.all()
 
             # Paginate data
-            paginated_data = get_paginated_data(Event, instance, request)
+            paginated_data = get_paginated_data(Event, qs, request)
             paginated_instances = paginated_data.pop('paginated_instances')
+
+            print(paginated_instances)
 
             serializer = EventListSerializer(paginated_instances, many=True)
 
-            data = {
+            # data = {
+            #     'data': ,
+            #     **paginated_data,
+            # }
+            print('pmp')
+            response = {
+                'draw': draw,
+                'recordsTotal': records_total,
+                'recordsFiltered': records_filtered,
                 'data': serializer.data,
-                **paginated_data,
             }
-            return Response({'status': 'success', 'data': data}, status=status.HTTP_200_OK)
+            print(response)
+            # print(data)
+            return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
             return get_error_response(e)
 
