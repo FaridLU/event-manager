@@ -11,7 +11,8 @@ class EventListSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super(EventListSerializer, self).to_representation(instance)
-        representation['date'] = instance.date.strftime('%b %d, %Y - %H:%M:%S UTC')
+        representation['clean_date'] = instance.date.strftime('%b %d, %Y - %H:%M:%S UTC')
+        representation['date'] = instance.date.strftime('%Y-%m-%dT%H:%M')
         return representation
 
 class EventSerializer(serializers.ModelSerializer):

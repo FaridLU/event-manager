@@ -10,7 +10,7 @@ sudo apt install python3-venv python3-dev libpq-dev postgresql postgresql-contri
 Open terminal and clone the project
 
 ```bash
-git clone git@github.com:FaridLU/event-manager.git
+git clone git@github.comFaridLU/event-manager.git
 ```
 
 Move to project directory
@@ -43,13 +43,7 @@ Now create .env file by using following command
 cp .env.example .env
 ```
 
-Now collect all staticfiles 
-
-```bash
-python manage.py collectstatic
-```
-
-Now setup database by using following command:
+Now setup database by using following command
 ```bash
 sudo -u postgres psql
 CREATE DATABASE eventdb;
@@ -59,6 +53,18 @@ ALTER ROLE admin SET default_transaction_isolation TO 'read committed';
 ALTER ROLE admin SET timezone TO 'UTC';
 GRANT ALL PRIVILEGES ON DATABASE eventdb TO admin;
 \q
+```
+
+Now migrate the database
+
+```bash
+python manage.py migrate
+```
+
+Now collect all staticfiles
+
+```bash
+python manage.py collectstatic
 ```
 
 Now simply run the project

@@ -40,7 +40,7 @@
                     "orderable": false,
                     "searchable": false,
                     "render": function (data, type, row) {
-                        return row['date'];
+                        return row['clean_date'];
                     },
                     "targets": 2
                 },
@@ -86,8 +86,8 @@
                                                         </select>
                                                       </div>
                                                       <div class="form-group col-md-6">
-                                                        <label for="date-${row['id']}">Date: ${row['date']}</label>
-                                                        <input type="datetime-local"  class="form-control" name="datetime" id="date-${row['id']}" value=${(row['date'])} required>
+                                                        <label for"date-${row['id']}">Date</label>
+                                                        <input type="datetime-local" class="form-control" name="datetime" id="date-${row['id']}" value=${(row['date'])} required>
                                                       </div>
                                                     </div>
                                                     
@@ -158,16 +158,16 @@
 
     function load_listeners() {
         $(document).on('submit', '.edit-event-form', function (e) {
+            e.preventDefault();
+
             let _this = $(this);
             let event_id = $(_this).data('event-id');
-            
             let data = {
                 'name': $(`#name-${event_id}`).val(),
                 'location': $(`#location-${event_id}`).val(),
                 'date': $(`#date-${event_id}`).val(),
                 'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']").val(),
             }
-            e.preventDefault();
 
             $.ajax({
                 url: `api/events/${event_id}`,
@@ -196,7 +196,6 @@
 
             let _this = $(this);
             let event_id = $(_this).data('event-id');
-
             let data = {
                 'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']").val(),
             }
@@ -231,7 +230,7 @@
         let data = {
             name: $('#name').val(),
             location: $('#location').val(),
-            'date': $('#date').val(),
+            date: $('#date').val(),
             csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(),
         }
         $.ajax({
