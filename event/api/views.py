@@ -3,7 +3,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from core.utils.exception_handler import get_error_response
+from core.utils.exception_handler import (get_error_response,
+                                          get_success_response)
 from core.utils.generic_pagination import get_paginated_data
 from event.models import Event
 
@@ -12,7 +13,6 @@ from .serializers import (BasicEventSerializer, EventCreateUpdateSerializer,
 
 
 class EventListCreateAPIView(APIView):
-
     # List of events
     def get_queryset(self):
         return Event.objects.all()
@@ -20,24 +20,16 @@ class EventListCreateAPIView(APIView):
     def get(self, request) -> Response:
         try:
             qs = self.get_queryset()
-            drug_qs_range = qs
-
-            draw = request.GET.get('draw')
             records_total = qs.count()
             records_filtered = qs.count()
 
-            length = int(request.GET.get('length'))
-            start = int(request.GET.get('start'))
-            order_column = request.GET.get('order[0][column]')
-            order_dir = request.GET.get('order[0][dir]')
-            search_str = request.GET.get('search[value]')
-
-            qs = Event.objects.all()
+            draw = request.GET.get('draw')
 
             # Paginate data
             paginated_data = get_paginated_data(Event, qs, request)
             paginated_instances = paginated_data.pop('paginated_instances')
 
+            # Serialize results
             serializer = EventListSerializer(paginated_instances, many=True)
             response = {
                 'draw': draw,
@@ -45,7 +37,8 @@ class EventListCreateAPIView(APIView):
                 'recordsFiltered': records_filtered,
                 'data': serializer.data,
             }
-            return Response(response, status=status.HTTP_200_OK)
+            return get_success_response(data=response)
+
         except Exception as e:
             return get_error_response(e)
 
@@ -56,10 +49,8 @@ class EventListCreateAPIView(APIView):
             serializer.is_valid(raise_exception=True)
             instance = serializer.save()
 
-            return Response(
-                {'status': 'success', 'message': 'Event is Created Successfully.', 'data': {'id': instance.id}},
-                status=status.HTTP_200_OK,
-            )
+            return get_success_response(message='Event is Created Successfully.')
+
         except Exception as e:
             return get_error_response(e)
 
@@ -72,7 +63,8 @@ class EventReadUpdateDeleteAPIView(APIView):
             instance = Event.objects.get(id=id)
             serializer = EventSerializer(instance)
 
-            return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
+            return get_success_response(data=serializer.data)
+
         except Exception as e:
             return get_error_response(e)
     
@@ -85,7 +77,7 @@ class EventReadUpdateDeleteAPIView(APIView):
             serializer.is_valid(raise_exception=True)
             serializer.save()
 
-            return Response({'status': 'success', 'message': 'Event is updated successfully.'}, status=status.HTTP_200_OK)
+            return get_success_response(message='Event is updated successfully.')
 
         except Exception as e:
             return get_error_response(e)
@@ -94,7 +86,7 @@ class EventReadUpdateDeleteAPIView(APIView):
     def delete(self, request, id):
         try:
             Event.objects.get(id=id).delete()
-            return Response({'status': 'success', 'message': 'Event is deleted successfully.'}, status=status.HTTP_200_OK)
+            return get_success_response(message='Event is deleted successfully.')
 
         except Exception as e:
             return get_error_response(e)

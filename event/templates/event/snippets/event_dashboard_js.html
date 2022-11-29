@@ -1,0 +1,261 @@
+<script>
+    $(function () {
+        var countries = JSON.parse(`{{ countries_str | safe }}`);
+        
+        // Event List Datatable (serverside)
+        eventTable = $("#event-list").DataTable({
+            lengthMenu: [5, 10, 25, 50, 101],
+            "iDisplayLength": 5,
+            "processing": true,
+            "serverSide": true,
+            "bFilter": false,
+            "autoWidth": true,
+            "ajax": {
+                url: "{% url 'event:event-api:event-list-create' %}",
+                type: 'GET',
+                data: function (d) {
+                    d.page_num = getPageNumber();
+                }
+            },
+            "order": [],
+            "columnDefs": [
+                {
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row) {
+                        return row['name'];
+                    },
+                    "targets": 0
+                },
+                {
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row) {
+                        return countries[row['location']];
+                    },
+                    "targets": 1
+                },
+                {
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row) {
+                        return row['date'];
+                    },
+                    "targets": 2
+                },
+                {
+                    "orderable": false,
+                    "searchable": false,
+                    "render": function (data, type, row) {
+
+                        // Generate options by using the data of countries
+                        options_html = '';
+                        for (var key of Object.keys(countries)) {
+                            let selected = (row['location'] === key) ? "selected": "";
+                            options_html += `<option value="${key}" ${selected}>${countries[key]}</option>`
+                        
+                        }
+                        // Build HTML modal based of initial data
+                        let html = `
+                            <div class="text-center">
+                                <a class="text-dark text-decoration-none cursor-pointer" href="#" data-toggle="modal" data-target="#eventEditModal-${row['id']}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit text-dark text-decoration-none cursor-pointer" href="#" data-toggle="modal" data-target="#eventEditModal-6"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </a>
+                                <a class="text-dark text-decoration-none cursor-pointer" href="#" data-toggle="modal" data-target="#eventDeleteModal-${row['id']}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 text-dark text-decoration-none cursor-pointer" href="#" data-toggle="modal" data-target="#eventDeleteModal-6"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                </a>
+                                <div class="modal fade text-left" id="eventEditModal-${row['id']}" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="card-header">
+                                                <h5 class="text-black"><strong>Events</strong></h5>
+                                                <span class="text-muted">Edit an event!</span>
+                                            </div>
+                                            <div class="modal-body mx-3">
+                                                <form class="text-black edit-event-form" data-event-id=${row['id']} >
+                                                    <div class="form-group">
+                                                      <label for="name-${row['id']}">Name</label>
+                                                      <input type="text" class="form-control" id="name-${row['id']}" value="${row['name']}">
+                                                    </div>
+                                                    <div class="form-row">
+                                                      <div class="form-group col-md-6">
+                                                        <label for="location-${row['id']}">Location</label>
+                                                        <select class="form-select form-control" aria-label=".form-select-lg" name="location" id="location-${row['id']}" required>
+                                                            ${options_html}
+                                                        </select>
+                                                      </div>
+                                                      <div class="form-group col-md-6">
+                                                        <label for="date-${row['id']}">Date: ${row['date']}</label>
+                                                        <input type="datetime-local"  class="form-control" name="datetime" id="date-${row['id']}" value=${(row['date'])} required>
+                                                      </div>
+                                                    </div>
+                                                    
+                                                    <button type="submit" class="btn btn-primary float-right">Update</button>
+                                                  </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade text-left" id="eventDeleteModal-${row['id']}" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <div class="modal-content">
+                                            <div class="card-header">
+                                                <h5 class="text-black"><strong>Events</strong></h5>
+                                                <span class="text-muted">Delete an event!</span>
+                                            </div>
+                                            <div class="modal-body mx-3">
+                                                <form class="text-black">
+                                                    Are you sure you want to delete?
+                                                    </br>
+                                                    
+                                                    <button class="btn btn-primary float-right delete-event-btn" data-event-id=${row['id']}>Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        return html;
+                    },
+                    "targets": 3
+                },
+            ],
+
+            "createdRow": function (row, data, dataIndex) {
+            },
+
+            "initComplete": function (settings, json) {
+                load_listeners();
+                feather.replace();
+                eventTable.page(getPageNumber() - 1).draw('page');
+            }
+        });
+
+        eventTable.on('draw', function () {
+            eventTable.columns.adjust();
+        });
+
+        $('.sidebar-toggle').click(function () {
+            eventTable.columns.adjust();
+        });
+
+        $('#event-list').on('page.dt', function () {
+            const info = eventTable.page.info();
+            const page_number = info.page + 1;
+            const queryString = getQueryString([{'key': 'page', 'value': page_number}]);
+            history.replaceState(page_number, queryString, `./${queryString}`);
+        });
+        $('#event-list').on('length.dt', function (e, settings, len) {
+            const queryString = getQueryString([{'key': 'page', 'value': 1}]);
+            history.replaceState({id: null}, queryString, `./${queryString}`);
+        });
+        $('#event-list').on('search.dt', function (e, settings, len) {
+            const queryString = getQueryString([{'key': 'page', 'value': 1}]);
+            history.replaceState({id: null}, queryString, `./${queryString}`);
+        });
+    });
+
+    function load_listeners() {
+        $(document).on('submit', '.edit-event-form', function (e) {
+            let _this = $(this);
+            let event_id = $(_this).data('event-id');
+            
+            let data = {
+                'name': $(`#name-${event_id}`).val(),
+                'location': $(`#location-${event_id}`).val(),
+                'date': $(`#date-${event_id}`).val(),
+                'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']").val(),
+            }
+            e.preventDefault();
+
+            $.ajax({
+                url: `api/events/${event_id}`,
+                type: 'PUT',
+                data: data,
+                success: function(response) {
+                    eventTable.ajax.reload();
+                    iziToast.success({
+                        title: 'OK',
+                        message: response['message'],
+                    });
+                },
+                error: function(response) {
+                    iziToast.error({
+                        title: 'Error',
+                        message: 'Some error occurred!',
+                    });
+                }
+            })
+
+            $(_this).parents('.modal').modal('hide');
+        });
+
+        $(document).on('click', '.delete-event-btn', function (e) {
+            e.preventDefault();
+
+            let _this = $(this);
+            let event_id = $(_this).data('event-id');
+
+            let data = {
+                'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']").val(),
+            }
+            
+            $.ajax({
+                url: `api/events/${event_id}`,
+                type: 'DELETE',
+                data: data,
+                success: function(response) {
+                    eventTable.ajax.reload();
+                    iziToast.success({
+                        title: 'OK',
+                        message: response['message'],
+                    });
+                },
+                error: function(response) {
+                    iziToast.error({
+                        title: 'Error',
+                        message: 'Some error occurred!',
+                    });
+                }
+            })
+
+            $(_this).parents('.modal').modal('hide');
+        });
+        
+    }
+    $(document).on('submit', '#create-event-form', function (e) {
+        e.preventDefault();
+        
+        let _this = $(this);
+        let data = {
+            name: $('#name').val(),
+            location: $('#location').val(),
+            'date': $('#date').val(),
+            csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(),
+        }
+        $.ajax({
+            url: `api/events/`,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                eventTable.ajax.reload();
+                $('#name').val('');
+                $('#location').val('');
+                $('#date').val('');
+
+                iziToast.success({
+                    title: 'OK',
+                    message: response['message'],
+                });
+            },
+            error: function(response) {
+                iziToast.error({
+                    title: 'Error',
+                    message: 'Some error occurred!',
+                });
+            }
+        })
+
+        $(_this).parents('.modal').modal('hide');
+    });
+</script>

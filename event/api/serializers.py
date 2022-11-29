@@ -9,6 +9,11 @@ class EventListSerializer(serializers.ModelSerializer):
         model = Event
         exclude = ('created_at', 'modified_at')
 
+    def to_representation(self, instance):
+        representation = super(EventListSerializer, self).to_representation(instance)
+        representation['date'] = instance.date.strftime('%b %d, %Y - %H:%M:%S UTC')
+        return representation
+
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event

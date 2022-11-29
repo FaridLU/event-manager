@@ -21,10 +21,9 @@ class PaginatedData:
 
 
 def get_paginated_data(model: Model, query_set: QuerySet, request: Request) -> dict:
-
-    total_number_of_records = query_set.count()
+    total_number_of_records: int = query_set.count()
     current_page_num: int = request.GET.get("page_num", 1)
-    page_size: int = int(request.GET.get("page_size", query_set.count() or 10))
+    page_size: int = request.GET.get("length", query_set.count() or 10)
 
     paginator = Paginator(query_set, page_size)
     paginated_instances = model.objects.none()
@@ -47,7 +46,6 @@ def get_paginated_data(model: Model, query_set: QuerySet, request: Request) -> d
         next_page_num = None
 
     last_page_num = paginator.num_pages
-
         
     return PaginatedData(
         total_number_of_records=total_number_of_records,

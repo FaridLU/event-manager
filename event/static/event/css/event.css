@@ -1,0 +1,20 @@
+.cursor-pointer, .custom-select{
+    cursor: pointer;
+}
+.text-black {
+    color: #000000;
+}
+.bg-dark {
+    background-color: rgb(27, 38, 44) !important;
+}
+@media (min-width: 768px) {
+    .sidebar-brand-icon {
+        display: none;
+    }
+}
+#wrapper > .toggled > .sidebar-brand > .sidebar-brand-icon {
+    display: block;
+}
+body, table {
+    color: #000000 !important;
+}
